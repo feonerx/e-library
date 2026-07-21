@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up | MCIU E-Library</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+  <header class="site-header">
+    <nav class="nav container">
+      <a href="./index.html" class="brand">
+        <span class="brand-mark">MCIU</span>
+        <span class="brand-text">
+          <strong>MCIU E-Library</strong>
+          <span>Michael &amp; Cecilia Ibru University</span>
+        </span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="./index.html">Catalog</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a class="btn secondary-btn" href="./login.html">Log In</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="auth-wrap">
+    <div class="auth-side">
+      <div class="auth-side-inner">
+        <span class="brand-mark">MCIU</span>
+        <h2>Join the MCIU E-Library community.</h2>
+        <p>
+          Create your free account with your matric or staff ID to start borrowing digital and
+          physical resources from the University library.
+        </p>
+      </div>
+    </div>
+
+    <div class="auth-form-col">
+      <div class="auth-card">
+        <h1>Create your account</h1>
+        <p>It only takes a minute to get started.</p>
+
+        <div class="alert error" id="formAlert"></div>
+
+        <form id="signupForm" novalidate>
+          <div class="form-grid">
+            <div class="field">
+              <label for="fullName">Full Name</label>
+              <input type="text" id="fullName" name="fullName" placeholder="e.g. Blessing Okoro" required />
+            </div>
+
+            <div class="form-grid two-col">
+              <div class="field">
+                <label for="matricNo">Matric / Staff ID</label>
+                <input type="text" id="matricNo" name="matricNo" placeholder="MCIU/2024/0123" required />
+              </div>
+              <div class="field">
+                <label for="role">I am a</label>
+                <select id="role" name="role" required>
+                  <option value="student">Student</option>
+                  <option value="staff">Staff</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="department">Department / Faculty</label>
+              <select id="department" name="department" required>
+                <option value="">Select department</option>
+                <option>Law</option>
+                <option>Medicine</option>
+                <option>Engineering</option>
+                <option>Business Administration</option>
+                <option>Computer Science</option>
+                <option>Mass Communication</option>
+                <option>Sciences</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" name="email" placeholder="you@mciu.edu.ng" required />
+            </div>
+
+            <div class="form-grid two-col">
+              <div class="field">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="At least 6 characters" minlength="6" required />
+              </div>
+              <div class="field">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Re-enter password" minlength="6" required />
+              </div>
+            </div>
+
+            <div class="checkbox-row">
+              <input type="checkbox" id="terms" required />
+              <label for="terms">I agree to the E-Library terms of use and borrowing policy.</label>
+            </div>
+          </div>
+
+          <div class="form-footer">
+            <button type="submit" class="btn accent-btn block">Create Account</button>
+            <p class="form-alt">Already have an account? <a href="./login.html">Log in</a></p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script src="./app.js"></script>
+  <script>
+    const form = document.getElementById("signupForm");
+    const alertBox = document.getElementById("formAlert");
+
+    function showAlert(message, type = "error") {
+      alertBox.textContent = message;
+      alertBox.className = `alert show ${type}`;
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      alertBox.classList.remove("show");
+
+      const fullName = document.getElementById("fullName").value.trim();
+      const matricNo = document.getElementById("matricNo").value.trim();
+      const role = document.getElementById("role").value;
+      const department = document.getElementById("department").value;
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+
+      if (!fullName || !matricNo || !department || !email || !password) {
+        showAlert("Please fill in all required fields.");
+        return;
+      }
+      if (password.length < 6) {
+        showAlert("Password must be at least 6 characters long.");
+        return;
+      }
+      if (password !== confirmPassword) {
+        showAlert("Passwords do not match.");
+        return;
+      }
+
+      const submitBtn = form.querySelector("button[type=submit]");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Creating account...";
+
+      try {
+        await MCIU.signup({ fullName, matricNo, email, department, role, password });
+        showAlert("Account created! Redirecting to log in...", "success");
+        setTimeout(() => {
+          window.location.href = "./login.html";
+        }, 1200);
+      } catch (err) {
+        showAlert(err.message);
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Create Account";
+      }
+    });
+  </script>
+</body>
+</html>
